@@ -16,13 +16,13 @@ Examples
 ```elixir
   [42.0] = Lua.State.new |> Lua.eval!("return 6 * 7")
 
-  Lua.State.new
+  Lua.State.new()
   |> Lua.set_global(:a, 6)
   |> Lua.set_global(:b, 7)
   |> Lua.set_global(:mul, fn st, [a, b] -> {st, [a * b]} end)
   |> Lua.eval!("return {a = a, b = b, c = mul(a, b)}")
   |> Enum.at(0)
-  |> Map.new
+  |> Lua.decode()
 ```
 
 Reference
