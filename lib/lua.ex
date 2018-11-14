@@ -42,14 +42,28 @@ defmodule Lua do
   def _encode(state, value), do: {state, encode(value)}
 
   @doc "Decodes a Lua value as an Elixir term."
-  @spec decode(nil | boolean | number | binary) :: term
-  def decode(value)
-  def decode(nil),   do: nil
-  def decode(false), do: false
-  def decode(true),  do: true
-  def decode(value) when is_number(value), do: value
-  def decode(value) when is_binary(value), do: value
-  def decode(value), do: value # FIXME
+  @spec decode(nil | boolean | number | binary | [] | [...]) :: term
+  def decode(value) when is_list(value) do
+    Enum.reduce(value, %{}, fn({k, v}, acc) ->
+      Map.merge(acc, %{k => _decode(v)})
+    end)
+  end
+  def decode(value), do: _decode(value)
+
+  defp _decode(nil),   do: nil
+  defp _decode([]),    do: nil
+  defp _decode(false), do: false
+  defp _decode(true),  do: true
+  defp _decode(value) when is_float(value) do
+    case Float.floor(value) == value do
+      true  -> Kernel.trunc(value)
+      false -> value
+    end
+  end
+  defp _decode(value) when is_number(value), do: value
+  defp _decode(value) when is_binary(value), do: value
+  defp _decode(value) when is_list(value), do: decode(value)
+  defp _decode(value), do: value
 
   @doc "Performs garbage collection."
   @spec gc(Lua.State.t) :: Lua.State.t
