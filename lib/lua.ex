@@ -44,9 +44,17 @@ defmodule Lua do
   @doc "Decodes a Lua value as an Elixir term."
   @spec decode(nil | boolean | number | binary | [] | [...]) :: term
   def decode(value) when is_list(value) do
-    Enum.reduce(value, %{}, fn({k, v}, acc) ->
+    result = Enum.reduce(value, %{}, fn({k, v}, acc) ->
       Map.merge(acc, %{k => _decode(v)})
     end)
+    case result["as_array"]==true do
+      true ->
+        result
+        |> Map.drop(["as_array"])
+        |> Enum.map(fn({_k, v}) -> v end)
+      false ->
+        result
+    end
   end
   def decode(value), do: _decode(value)
 
