@@ -2,7 +2,7 @@ defmodule Lua.Mixfile do
   use Mix.Project
 
   @name      "ExLua"
-  @version   File.read!("VERSION") |> String.strip
+  @version   File.read!("VERSION") |> String.trim()
   @github    "https://github.com/bendiken/exlua"
   @bitbucket "https://bitbucket.org/bendiken/exlua"
   @homepage  @github
@@ -24,7 +24,7 @@ defmodule Lua.Mixfile do
      docs: [source_ref: @version, main: "readme", extras: ["README.md"]],
      test_coverage: [tool: ExCoveralls],
      preferred_cli_env: [
-       "coveralls": :test,
+       coveralls: :test,
        "coveralls.detail": :test,
        "coveralls.post": :test,
        "coveralls.html": :test,
